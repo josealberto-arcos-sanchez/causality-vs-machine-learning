@@ -13,3 +13,6 @@ This is a very simple (silly?) experiment, but shows some important truths:
 
 * Causal inference is like an extra dimension that lets us see things we couldn't see before, and take decisions that were impossible to take without causal information.
 
+* Using only well-selected causal variables to predict the outcome helps the model on finding the **true underlying causal relationships**.
+
+* This also works with non-linear models!
