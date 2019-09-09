@@ -1,0 +1,135 @@
+---
+title: "[Experiment 5] - Instrumental variables | Linear relationships"
+output: html_notebook
+---
+
+```{r}
+library(dagitty)
+library(ggdag)
+library(tibble)
+library(purrr)
+```
+
+
+# Instrumental variables
+
+The target of this experiment is to check if instrumental variables can be used to solve problems with confounding when not having confounder data, and how to do it.
+
+Steps of the experiment:
+
+1. Define causal model with an instrumental variable (Z) and a confounder (U)
+2. Create dataset based on the defined causal model.
+3. Try to estimate the influence of X on Y without knowing Z nor U. This is the traditional "machine learning" approach and should fail.
+4. Try to estimate the influence of X on Y knowing Z but not U. Is this possible?
+5. Try to estimate the influence of X on Y knowing the confounder U. We have already seen this works.
+
+---
+
+## 1. Define causal model
+
+Let's define a very simple model with an instrumental variable (Z) and a confounder (U):
+
+```{r}
+dag <- dagify(Y ~ X,
+              X ~ Z,
+              X ~ U,
+              Y ~ U,
+              coords = data.frame(x = c(0, 1, -1, .5), 
+                                  y = c(0, 0, 0, 1), 
+                                  name = c("X", "Y", "Z", "U")))
+
+ggdag(dag) + theme_dag_blank() + labs(title = "Causal model")
+```
+
+---
+
+## 2. Create data set
+
+Let's now create a data set with linear relationships:
+
+```{r}
+N <- 10e3
+
+z <- rnorm(n = N, mean = 0, sd = 1)
+u <- rnorm(n = N, mean = 0, sd = 1)
+
+x <- 5*u - 2*z + rnorm(n = N, mean = 0, sd = 1) * 4
+y <- 10*u - 2*x + rnorm(n = N, mean = 0, sd = 1) * 5
+
+df <- tibble(x = x, y = y, u = u, z = z)
+```
+
+All variables should have a normal distribution.  
+Let's take a look:
+
+```{r}
+map(df, ~ ggplot() + geom_histogram(mapping = aes(x = .)))
+```
+
+Let's see the relationships between variables:
+
+```{r}
+ggplot(data = df) + geom_point(mapping = aes(x, y))
+ggplot(data = df) + geom_point(mapping = aes(z, x))
+ggplot(data = df) + geom_point(mapping = aes(u, x))
+ggplot(data = df) + geom_point(mapping = aes(u, y))
+```
+
+---
+
+## 3. Try to estimate the influence of X on Y
+
+Without access to Z or U data. This should fail. We know a confounder exists between X and Y, but we don't have data of the confounder variable U:
+
+```{r}
+linear_model <- lm(y ~ x, data = df)
+summary(linear_model)
+```
+
+The model says that for each 1 unit increment in *x*, *y* decreases by 0.88 units (the real value is 2, not 0.88).
+
+---
+
+## 4. Try to estimate the influence of X on Y using Z
+
+What if we don't have data of the confounder variable, but we know and can measure an instrumental variable Z? The theory says we should be able to retrieve the real relationship between X and Y. Let's check it:
+
+```{r}
+linear_model_zx <- lm(x ~ z, data = df)
+summary(linear_model_zx)
+
+linear_model_zy <- lm(y ~ z, data = df)
+summary(linear_model_zy)
+```
+
+For each 1 unit increase in z, x decreases 1.9 units. That's a good approximation to the real relationship!
+
+For each 1 unit increase in z, y increases 3.84 units.
+
+All the effect of Z on Y passes through X, so the effect of X on Y should be:
+
+r_xy = r_zy / r_zx = 3.835 / -1.894 = -2.02
+
+The real value is -2, so that's a great result!! :)
+
+---
+
+## 5. Try to estimate the influence of X on Y using U
+
+We already know this works (we checked it in previous experiments). But let's check it again:
+
+```{r}
+linear_model_uxy <- lm(y ~ x + u)
+summary(linear_model_uxy)
+```
+
+Perfect result, as expected! :)
+
+---
+
+## 6. Conclusions
+
+* Instrumental variables are a great way to obtain the real relationship between confounded variables when we don't have data of the confounder variable U.
+
+* When the relationships are linear, the effect of X on Y can be calculated as r_xy = r_zy / r_zx
+
