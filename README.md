@@ -1,8 +1,21 @@
 # Causality "vs" Machine Learning
 
+## Abstract
+
 How does the knowledge of causal inference impact data science projects? Is it worth the effort?  
 
 This set of experiments shows the huge value causal inference may have in real-world data science projects.
+
+---
+
+## Experiments
+
+* [Real underlying patterns - Linear relationships]()
+* [Real underlying patterns - Non-linear relationships]()
+* [Instrumental variables - Linear relationships](https://htmlpreview.github.io/?https://github.com/josealberto-arcos-sanchez/causality-vs-machine-learning/blob/master/%5BExperiment%205%5D%20-%20Instrumental%20variables.nb.html)
+* [Estimation of latent variables - Linear relationships]()
+
+---
 
 ## Some conclusions
 
