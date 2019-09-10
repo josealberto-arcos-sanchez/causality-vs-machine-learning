@@ -13,6 +13,7 @@ This set of experiments shows the huge value causal inference may have in real-w
 * [Real underlying patterns - Linear relationships]()
 * [Real underlying patterns - Non-linear relationships]()
 * [Instrumental variables - Linear relationships](https://htmlpreview.github.io/?https://github.com/josealberto-arcos-sanchez/causality-vs-machine-learning/blob/master/%5BExperiment%205%5D%20-%20Instrumental%20variables.nb.html)
+* [Mediators - Linear relationships](https://htmlpreview.github.io/?https://github.com/josealberto-arcos-sanchez/causality-vs-machine-learning/blob/master/%5BExperiment%207%5D%20-%20Mediators%20(linear).nb.html)
 * [Estimation of latent variables - Linear relationships]()
 
 ---
@@ -31,4 +32,4 @@ This is a set of very simple experiments, but shows some important truths:
 
 * This also works with non-linear models!
 
-* If we don't have data of a needed confounder variable, not everything is lost! An instrumental variable will let us find the real relationship between two confounded variables without data of the confounder one.
+* If we don't have data of a needed confounder variable, not everything is lost! An instrumental variable or a mediator variables will let us find the real relationship between two confounded variables without data of the confounder one.
