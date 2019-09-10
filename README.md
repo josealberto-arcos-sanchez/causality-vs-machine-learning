@@ -13,7 +13,7 @@ This set of experiments shows the huge value causal inference may have in real-w
 * Real underlying patterns - Linear relationships:
   - [Experiment 1](https://htmlpreview.github.io/?https://raw.githubusercontent.com/josealberto-arcos-sanchez/causality-vs-machine-learning/master/%5BExperiment%201%5D%20-%20Causality%20effect%20in%20ML%20effect%20prediction.html)
   - [Experiment 2](https://htmlpreview.github.io/?https://raw.githubusercontent.com/josealberto-arcos-sanchez/causality-vs-machine-learning/master/%5BExperiment%202%5D%20-%20Causality%20effect%20in%20ML%20effect%20prediction.html)
-* [Real underlying patterns - Non-linear relationships]()
+* [Real underlying patterns - Non-linear relationships](https://htmlpreview.github.io/?https://raw.githubusercontent.com/josealberto-arcos-sanchez/causality-vs-machine-learning/master/%5BExperiment%203%5D%20-%20Causality%20effect%20in%20ML%20effect%20prediction%20(non-linear%20problem).html)
 * [Instrumental variables - Linear relationships](https://htmlpreview.github.io/?https://github.com/josealberto-arcos-sanchez/causality-vs-machine-learning/blob/master/%5BExperiment%205%5D%20-%20Instrumental%20variables.nb.html)
 * [Mediators - Linear relationships](https://htmlpreview.github.io/?https://github.com/josealberto-arcos-sanchez/causality-vs-machine-learning/blob/master/%5BExperiment%207%5D%20-%20Mediators%20(linear).nb.html)
 * [Estimation of latent variables - Linear relationships]()
