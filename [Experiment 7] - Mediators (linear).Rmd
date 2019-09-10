@@ -1,0 +1,139 @@
+---
+title: "[Experiment 7] - Mediators | Linear relationships"
+output: html_notebook
+---
+
+```{r}
+library(dagitty)
+library(ggdag)
+library(tibble)
+library(purrr)
+```
+
+
+# Mediators (linear)
+
+The target of this experiment is to check if mediators can be used to solve problems with confounding when not having confounder data, and how to do it for linear problems.
+
+Steps of the experiment:
+
+1. Define causal model with an mediator variable (M) and a confounder (U)
+2. Create dataset based on the defined causal model.
+3. Try to estimate the influence of X on Y without knowing M nor U. This is the traditional "machine learning" approach and should fail.
+4. Try to estimate the influence of X on Y knowing M but not U. Is this possible?
+5. Try to estimate the influence of X on Y knowing the confounder U. We have already seen this works.
+
+---
+
+## 1. Define causal model
+
+Let's define a very simple model with a mediator variable (M) and a confounder (U). We will use 
+
+```{r}
+dag <- dagify(Y ~ M,
+              M ~ X,
+              X ~ U,
+              Y ~ U,
+              coords = data.frame(x = c(0, 1, .5, .5), 
+                                  y = c(0, 0, 0, 1), 
+                                  name = c("X", "Y", "M", "U")))
+
+ggdag(dag) + theme_dag_blank() + labs(title = "Causal model")
+```
+
+---
+
+## 2. Create data set
+
+Let's now create a data set with linear relationships:
+
+```{r}
+N <- 10e3
+
+u <- rnorm(n = N, mean = 0, sd = 1)
+
+x <- 5*u + rnorm(n = N, mean = 0, sd = 1) * 2
+m <- -0.2*x + rnorm(n = N, mean = 0, sd = 1) * 0.5
+y <- 10*u - 3*m + rnorm(n = N, mean = 0, sd = 1) * 5
+
+df <- tibble(x = x, y = y, u = u, z = z)
+```
+
+All variables should have a normal distribution.  
+Let's take a look:
+
+```{r}
+map(df, ~ ggplot() + geom_histogram(mapping = aes(x = .)))
+```
+
+Let's see the relationships between variables:
+
+```{r}
+ggplot(data = df) + geom_point(mapping = aes(x, y))
+ggplot(data = df) + geom_point(mapping = aes(z, x))
+ggplot(data = df) + geom_point(mapping = aes(u, x))
+ggplot(data = df) + geom_point(mapping = aes(u, y))
+```
+
+---
+
+## 3. Try to estimate the influence of X on Y
+
+Without access to M or U data. This should fail. We know a confounder exists between X and Y, but we don't have data of the confounder variable U:
+
+```{r}
+linear_model <- lm(y ~ x, data = df)
+summary(linear_model)
+```
+
+The model says that for each 1 unit increment in *x*, *y* increases by 2.3 units (the real value is 0.6).
+
+---
+
+## 4. Try to estimate the influence of X on Y using M
+
+What if we don't have data of the confounder variable, but we know and can measure the mediator M? The theory says we should be able to retrieve the real relationship between X and Y. Let's check it:
+
+```{r}
+linear_model_mx <- lm(m ~ x, data = df)
+summary(linear_model_mx)
+
+linear_model_ym <- lm(y ~ m + x, data = df)
+summary(linear_model_ym)
+```
+
+For each 1 unit increase in x, m decreases by 0.2 units. That's exactly the real relationship!
+
+For each 1 unit increase in m, y decreases by 3.26 units.
+
+All the effect of X on Y passes through M:
+
+Y = r_ym \* M + r_yu \* U + u_y = r_ym \* (r_mx \* X) + r_yu \* U + u_y
+
+So the effect of X on Y should be:
+
+r_yx = r_ym \* r_mx = -0.2 \* -3.26  = 0.652
+
+The real value is 0.6, so that's a much better result!! :)
+
+---
+
+## 5. Try to estimate the influence of X on Y using U
+
+We already know this works (we checked it in previous experiments). But let's check it again:
+
+```{r}
+linear_model_uxy <- lm(y ~ x + u)
+summary(linear_model_uxy)
+```
+
+Perfect result, as expected! :)
+
+---
+
+## 6. Conclusions
+
+* Mediator variables are a good way to obtain the real relationship between confounded variables when we don't have data of the confounder variable U.
+
+* When the relationships are linear, the effect of X on Y can be calculated as r_yx = r_ym \* r_mx
+
